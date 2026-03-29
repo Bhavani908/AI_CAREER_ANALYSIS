@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: career-ai-resume-system
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers=2 --timeout=120
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true   # Render auto-generates a secure random key
+      - key: DB_PATH
+        value: /tmp/database.db
+    healthCheckPath: /ping

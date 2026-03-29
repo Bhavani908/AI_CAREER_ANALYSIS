@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume History — CareerAI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background: var(--bg); min-height:100vh;">
+
+  <nav class="navbar">
+    <div class="nav-logo">🎯 CareerAI <span class="dot"></span></div>
+    <div class="nav-links">
+      <a href="/dashboard">Analyze</a>
+      <a href="/history" class="active">History</a>
+      <a href="/logout" class="nav-logout">Sign out</a>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1>Resume History</h1>
+      <p>All your previous resume analyses and match results.</p>
+    </div>
+
+    {% if records %}
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Resume File</th>
+            <th>Matched Role</th>
+            <th>Match Score</th>
+            <th>Skill Gaps</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td><span class="filename">{{ r.filename }}</span></td>
+            <td><span class="role-name">{{ r.role }}</span></td>
+            <td>
+              <span class="score-badge {% if r.match_score >= 80 %}high{% elif r.match_score >= 50 %}mid{% else %}low{% endif %}">
+                {{ r.match_score }}%
+              </span>
+            </td>
+            <td>
+              {% if r.gaps and r.gaps != "[]" and r.gaps != "" %}
+                <span style="color: var(--text-muted); font-size:13px;">
+                  {{ r.gaps | replace("'","") | replace("[","") | replace("]","") | truncate(60) }}
+                </span>
+              {% else %}
+                <span style="color: var(--success); font-size:13px;">✔ No gaps</span>
+              {% endif %}
+            </td>
+            <td style="font-size:13px; color: var(--text-dim);">
+              {{ r.created_at if r.created_at else '—' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <div class="history-table-wrap">
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No analyses yet</h3>
+        <p>Upload your resume to see your career analysis history here.</p>
+        <a href="/dashboard" style="display:inline-block; margin-top:20px;" class="btn-primary"
+           style="padding:11px 22px; border-radius:var(--radius);">
+          Analyze your first resume →
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+</body>
+</html>

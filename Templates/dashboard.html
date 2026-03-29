@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — CareerAI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="landing-page">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      🎯 CareerAI <span class="dot"></span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="active">Analyze</a>
+      <a href="/history">History</a>
+      <a href="/logout" class="nav-logout">Sign out</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">✦ AI-Powered Career Intelligence</div>
+      <h1>
+        Find your perfect<br>
+        <span class="accent">career match</span>
+      </h1>
+      <p>Upload your resume and get instant job matching, skill gap analysis, and personalized learning paths — all in seconds.</p>
+
+      {% if error %}
+      <div class="error-msg" style="text-align:left; margin-bottom:20px;">⚠ {{ error }}</div>
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <div class="upload-zone" id="dropZone">
+          <div class="upload-icon">📄</div>
+          <h3>Drop your resume here</h3>
+          <p>Supports PDF and DOCX formats</p>
+
+          <label class="file-input-label" for="resumeInput">
+            📁 Browse files
+          </label>
+          <input type="file" name="resume" id="resumeInput" accept=".pdf,.docx" required style="display:none">
+          <span id="fileChosen">No file selected</span>
+
+          <button type="submit" class="btn-analyze" id="analyzeBtn">
+            <span id="btnText">🔍 Analyze Resume</span>
+            <span class="spinner" id="btnSpinner"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Features strip -->
+  <div class="features-strip">
+    <div class="feature-item"><span class="dot">✦</span> Job Role Matching</div>
+    <div class="feature-item"><span class="dot">✦</span> Skill Gap Detection</div>
+    <div class="feature-item"><span class="dot">✦</span> Learning Roadmap</div>
+    <div class="feature-item"><span class="dot">✦</span> Mock Interview Prep</div>
+    <div class="feature-item"><span class="dot">✦</span> Live Job Links</div>
+  </div>
+
+  <script>
+    const input = document.getElementById('resumeInput');
+    const fileChosen = document.getElementById('fileChosen');
+    const dropZone = document.getElementById('dropZone');
+    const form = document.getElementById('uploadForm');
+    const btn = document.getElementById('analyzeBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('btnSpinner');
+
+    input.addEventListener('change', () => {
+      if (input.files.length > 0) {
+        fileChosen.textContent = '✔ ' + input.files[0].name;
+        fileChosen.style.color = '#00d4aa';
+      }
+    });
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        fileChosen.textContent = '✔ ' + file.name;
+        fileChosen.style.color = '#00d4aa';
+      }
+    });
+
+    form.addEventListener('submit', () => {
+      btnText.textContent = 'Analyzing...';
+      spinner.style.display = 'block';
+      btn.classList.add('loading');
+    });
+  </script>
+
+</body>
+</html>

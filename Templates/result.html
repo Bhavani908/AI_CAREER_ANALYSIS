@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Analysis Report — CareerAI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="result-page">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-logo">🎯 CareerAI <span class="dot"></span></div>
+    <div class="nav-links">
+      <a href="/dashboard">Analyze</a>
+      <a href="/history">History</a>
+      <a href="/logout" class="nav-logout">Sign out</a>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1>Career Analysis Report</h1>
+      <p>Based on your resume, here are your top matched roles and personalized action plans.</p>
+    </div>
+
+    <div class="result-grid">
+      {% for item in role_actions %}
+      <div class="role-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+
+        <!-- Card Header -->
+        <div class="role-card-header">
+          <div>
+            <div class="role-title">{{ item.role }}</div>
+            <div class="role-type-tag">
+              {% if item.type == "interview" %}
+                ✅ Strong Match — Ready to Interview
+              {% else %}
+                📈 Growth Opportunity — Learning Path Available
+              {% endif %}
+            </div>
+            {% if item.reason %}
+            <div style="font-size:13px; color: var(--text-muted); margin-top:6px; font-style:italic;">
+              💡 {{ item.reason }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="match-pill">
+            <div class="match-number {% if item.match >= 80 %}high{% elif item.match >= 50 %}mid{% else %}low{% endif %}">
+              {{ item.match }}%
+            </div>
+            <div class="match-bar-wrap">
+              <div class="match-bar {% if item.match >= 80 %}high{% elif item.match >= 50 %}mid{% else %}low{% endif %}"
+                   style="width: {{ item.match }}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="role-card-body">
+
+          {% if item.type == "interview" %}
+          <div class="interview-ready">
+            <div class="interview-ready-text">
+              <h4>🎉 You're interview-ready!</h4>
+              <p>Your skills strongly align with this role. Practice now to land the job.</p>
+            </div>
+            <a href="/start_interview/{{ item.role }}" class="btn-interview">
+              🎤 Start Mock Interview
+            </a>
+          </div>
+          {% else %}
+          <div class="section-label">Skill Gaps to Bridge</div>
+          <div class="skills-grid">
+            {% for gap in item.gaps %}
+            <div class="skill-card">
+              <h4>{{ gap }}</h4>
+              <p>Free learning resource available</p>
+              <a href="{{ item.resources[gap] }}" target="_blank" class="btn-learn">
+                Learn now →
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="section-label">Apply for Jobs</div>
+          <div class="jobs-row">
+            {% for site, link in item.job_links.items() %}
+            <a href="{{ link }}" target="_blank" class="job-btn">{{ site }} ↗</a>
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="text-align:center; margin-top:40px;">
+      <a href="/dashboard" style="color: var(--text-muted); font-size:14px;">← Analyze another resume</a>
+    </div>
+  </div>
+
+</body>
+</html>
